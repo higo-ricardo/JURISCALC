@@ -1,0 +1,7 @@
+{
+  "TJSP_CIVEL": {"descricao": "TJSP Cível padrão", "indice": "IPCA-E", "taxa_am": 0.01, "tipo_juros": "simples", "termo_inicial_padrao": "citacao", "observacao": "Súm.54/362"},
+  "TJRJ_CIVEL": {"descricao": "TJRJ Cível padrão", "indice": "IPCA-E", "taxa_am": 0.01, "tipo_juros": "simples", "termo_inicial_padrao": "citacao", "observacao": "Súm.43/54/362"},
+  "JF_MANUAL_CJF": {"descricao": "JF Manual CJF", "indice": "IPCA-E", "taxa_am": 0.005, "tipo_juros": "simples", "termo_inicial_padrao": "citacao", "observacao": "Previdenciário INPC"},
+  "FAZENDA_EC113": {"descricao": "Fazenda pós EC113", "indice": "SELIC", "taxa_am": 0.0, "tipo_juros": "selic_unica", "termo_inicial_padrao": "citacao", "corte_ec113": "2021-12-09", "observacao": "Só SELIC após 09/12/2021"},
+  "TJMA_CIVEL": {"descricao": "TJMA Cível padrão (CGJ-MA)", "indice": "INPC", "taxa_am": 0.01, "tipo_juros": "simples", "termo_inicial_padrao": "citacao", "observacao": "Tabela TJMA/CGJ-MA (INPC) + 1% a.m.; Súm.43/54/362"}
+}
