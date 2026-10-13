@@ -1,18 +1,19 @@
 """Entrypoint — único lugar que conhece o concreto. Comandos via dict, DI via construtor."""
 import argparse
+import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
 
 from backend.service import CalculadoraService
 from backend.storage import DB_DEFAULT, Database
-from backend.tabelas.sync import sync_indice
+from backend.tabelas.sync import INDICES, Sincronizador, sync_indice
 from frontend.app import WebServer
 from frontend.cli import WizardCLI
 
 
 class Context:
     def __init__(self, db: Path):
-        self.service = CalculadoraService(Database(db))
+        self.service = CalculadoraService(Database(db), sincronizador=Sincronizador(db))
 
 
 class Command(ABC):
@@ -50,8 +51,11 @@ class ListarCommand(Command):
 
 class SyncCommand(Command):
     def run(self, ctx: Context, args: argparse.Namespace) -> int:
+        if not args.tudo and not args.indice:
+            print(f"use --tudo ou --indice ({', '.join(INDICES)})", file=sys.stderr)
+            return 2
         Database(Path(args.db)).init(seed=False)
-        alvos = ["IPCA-E", "IPCA", "INPC", "SELIC", "TR"] if args.tudo else [args.indice]
+        alvos = INDICES if args.tudo else [args.indice]
         for ind in alvos:
             print(ind, sync_indice(Path(args.db), ind, args.de, args.ate), "OK")
         return 0

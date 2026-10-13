@@ -1,7 +1,9 @@
 """Memória de cálculo — Builder: mesma base gera dict/HTML/CSV."""
 from __future__ import annotations
 
+import base64
 from decimal import Decimal
+from functools import lru_cache
 from pathlib import Path
 
 
@@ -11,12 +13,18 @@ class MemoriaBuilder:
         self.linhas: list[dict] = []
 
     @staticmethod
+    @lru_cache(maxsize=1)
     def _logo() -> str:
-        """Cabeçalho com brasão TJMA (base64, funciona offline/impresso)."""
-        import base64
+        """Cabeçalho com brasão TJMA (base64, funciona offline/impresso).
 
+        Cacheado: lê o JPEG do disco e gera base64 (~23KB) a cada memória.
+        O arquivo não muda em runtime, então o cache é seguro.
+
+        O primeiro caminho é relativo ao módulo e sempre resolve — os outros
+        são apenas um fallback para rodar de outro diretório de trabalho.
+        """
         for cand in (Path(__file__).resolve().parents[1] / "TJMA.jpg",
-                     Path("TJMA.jpg"), Path("C:/Users/HIGO/Desktop/CALCULADORA/TJMA.jpg")):
+                     Path("TJMA.jpg")):
             if cand.exists():
                 b64 = base64.b64encode(cand.read_bytes()).decode()
                 return (f"<div style='text-align:center;margin-bottom:10px'>"

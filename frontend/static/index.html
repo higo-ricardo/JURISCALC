@@ -4,27 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora Judicial</title>
-<style>
-:root{--bg:#F8FAFC;--ink:#111827;--muted:#6B7280;--accent:#1E40AF;--ok:#047857;--danger:#B91C1C;--card:#fff}
-*{box-sizing:border-box;font-family:Inter,Arial,sans-serif}
-body{background:var(--bg);color:var(--ink);margin:0;padding:24px;max-width:980px;margin:auto}
-h1{font-size:22px;margin:0} .muted{color:var(--muted);font-size:13px}
-.card{background:var(--card);border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:14px 0}
-label{font-size:12px;color:var(--muted);text-transform:uppercase;display:block;margin-top:10px}
-input,select{width:100%;padding:9px;border:1px solid #d1d5db;border-radius:8px;font-size:14px}
-.row{display:flex;gap:10px}.row>div{flex:1}
-.stepper{display:flex;gap:6px;margin:12px 0}.stepper div{flex:1;height:8px;border-radius:4px;background:#e5e7eb}.stepper div.on{background:var(--ink)}
-button{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:11px 18px;font-weight:bold;cursor:pointer;margin-top:12px}
-button.sec{background:#e5e7eb;color:var(--ink)}
-table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#f3f4f6}
-.total{background:var(--ink);color:#fff;border-radius:8px;padding:12px;margin-top:12px;display:flex;justify-content:space-between;font-weight:bold}
-#erro{color:var(--danger);font-weight:bold}
-.verba{border:1px dashed #9ca3af;border-radius:8px;padding:10px;margin-top:10px}
-</style>
+<link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
-<h1>Calculadora de Atualização Judicial</h1>
-<div class="muted">Processo → Verbas → Parâmetros → Resultado | <span id="dbinfo"></span></div>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
+  <div>
+    <h1>Calculadora de Atualização Judicial</h1>
+    <div class="muted">Processo → Verbas → Parâmetros → Resultado | <span id="dbinfo"></span></div>
+  </div>
+  <a href="/tabelas" style="margin-top:0"><button class="sec" style="margin-top:0">Atualizar tabelas</button></a>
+</div>
 <div class="stepper"><div class="on"></div><div class="on"></div><div id="s3"></div><div id="s4"></div></div>
 
 <div class="card">

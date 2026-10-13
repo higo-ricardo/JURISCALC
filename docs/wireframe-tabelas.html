@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Atualizar Tabelas</title>
+<style>
+/* Mesmas variáveis de frontend/static/index.html, para o wireframe ler como a tela real */
+:root{--bg:#F8FAFC;--ink:#111827;--muted:#6B7280;--accent:#1E40AF;--ok:#047857;--danger:#B91C1C;--card:#fff}
+*{box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+body{background:var(--bg);color:var(--ink);margin:0;padding:24px;max-width:980px;margin:auto}
+h1{font-size:22px;margin:0}.muted{color:var(--muted);font-size:13px}
+.card{background:var(--card);border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:14px 0}
+label{font-size:12px;color:var(--muted);text-transform:uppercase;display:block;margin-top:10px}
+input,select{width:100%;padding:9px;border:1px solid #d1d5db;border-radius:8px;font-size:14px}
+.row{display:flex;gap:10px}.row>div{flex:1}
+button{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:11px 18px;font-weight:bold;cursor:pointer;margin-top:12px}
+button.sec{background:#e5e7eb;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#f3f4f6}
+
+/* ---- wireframe-only ---- */
+.tabs{display:flex;gap:6px;margin:12px 0}
+.tabs span{padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;color:var(--muted);background:#e5e7eb}
+.tabs span.on{background:var(--ink);color:#fff}
+.tag{display:inline-block;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:99px;text-transform:uppercase}
+.tag.ok{background:#d1fae5;color:var(--ok)}.tag.warn{background:#fef3c7;color:#92400e}
+.pill{background:#eef2ff;color:var(--accent);border-radius:99px;padding:2px 9px;font-size:12px;font-weight:bold}
+.mini{padding:5px 11px;font-size:12px;margin:0;border-radius:6px}
+.bar{height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;margin-top:10px}
+.bar div{height:100%;background:var(--accent);width:40%}
+.note{border-left:3px solid var(--accent);background:#eef2ff;padding:9px 12px;margin:10px 0 0;font-size:13px;border-radius:0 6px 6px 0}
+.note b{color:var(--accent)}
+.estado{margin-top:34px;padding-top:18px;border-top:2px dashed #cbd5e1}
+h2.sec{font-size:17px;margin:22px 0 6px}
+code{background:#e5e7eb;padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="muted">WIREFRAME — sem código real. Proposta de tela para "Atualizar tabelas".</div>
+<h1>Calculadora de Atualização Judicial</h1>
+
+<h2 class="sec">1. Navegação: a tela entra como aba ao lado da calculadora</h2>
+<div class="note"><b>Decisão:</b> a tela atual é um formulário único e sem navegação. "Atualizar tabelas" é uma tarefa de manutenção, não parte do fluxo de cálculo — compete pela atenção, mas não atrapalha o cálculo. Aba mantém o layout de coluna única e não obriga a criar um roteador de páginas no servidor.</div>
+
+<div class="card">
+  <div class="tabs"><span class="on">Calcular</span><span>Tabelas</span></div>
+  <div class="muted">Processo → Verbas → Parâmetros → Resultado</div>
+</div>
+
+<h2 class="sec">2. Estado inicial — nenhuma sincronização em andamento</h2>
+<div class="note"><b>Decisão:</b> cada índice tem botão próprio, porque na prática quase sempre se quer atualizar <b>um</b> índice faltando (o tribunal mudou a GesCad) e não os cinco. O botão em lote fica separado, abaixo. Fonte e situação vêm da tabela <code>indices</code>; "Atualizado em" é o <code>MAX(competencia)</code>.</div>
+
+<div class="card">
+  <h3>Tabelas de índices</h3>
+  <table>
+    <thead><tr><th>Índice</th><th>Fonte</th><th>Última competência</th><th>Competências</th><th></th></tr></thead>
+    <tbody>
+      <tr><td><b>IPCA-E</b></td><td>IBGE</td><td>2026-10</td><td>82</td><td><button class="sec mini">Atualizar</button></td></tr>
+      <tr><td><b>IPCA</b></td><td>IBGE</td><td>2026-10</td><td>82</td><td><button class="sec mini">Atualizar</button></td></tr>
+      <tr><td><b>INPC</b></td><td>IBGE</td><td>2026-10</td><td>82</td><td><button class="sec mini">Atualizar</button></td></tr>
+      <tr><td><b>SELIC</b></td><td>Bacen</td><td>2026-10</td><td>82</td><td><button class="sec mini">Atualizar</button></td></tr>
+      <tr><td><b>TR</b></td><td>Bacen</td><td>2026-10</td><td>82</td><td><button class="sec mini">Atualizar</button></td></tr>
+      <tr><td><b>IGP-M</b> <span class="pill">não sincroniza</span></td><td>—</td><td>2026-10</td><td>82</td><td><span class="muted">—</span></td></tr>
+    </tbody>
+  </table>
+  <div class="muted" style="margin-top:8px">IGP-M consta no banco mas não tem fonte em <code>INDICES</code> (<code>sync.py:24</code>) — por isso fica sem botão.</div>
+</div>
+
+<div class="card">
+  <h3>Atualizar todas as tabelas</h3>
+  <div class="row">
+    <div><label>De (AAAA-MM)</label><input value="2020-01"></div>
+    <div><label>Até (AAAA-MM)</label><input value="2026-10"></div>
+  </div>
+  <div class="note"><b>Decisão:</b> o período é obrigatório e explícito, nunca "do início ao fim". Sem isso o usuário não tem como prever o custo — <code>--tudo</code> de 2020-01 é 82 meses × 5 índices.</div>
+  <button>Atualizar todas</button>
+  <span class="muted" style="margin-left:10px">leva alguns minutos</span>
+</div>
+
+<h2 class="sec">3. Estado em andamento — a tela precisa sobreviver ao sync</h2>
+<div class="note"><b>Decisão (a mais importante):</b> como o servidor é single-threaded, o sync <b>não</b> acontece dentro do request. <code>POST /api/sync</code> devolve <code>202</code> na hora e o JS faz polling em <code>GET /api/sync</code>. Sem isso a aba fica branca por minutos. Durante a execução, botão e campos ficam desabilitados — só um sync por vez (evita escrita concorrente no mesmo SQLite).</div>
+
+<div class="card">
+  <h3>Tabelas de índices</h3>
+  <table>
+    <thead><tr><th>Índice</th><th>Fonte</th><th>Última competência</th><th>Situação</th></tr></thead>
+    <tbody>
+      <tr><td><b>IPCA-E</b></td><td>IBGE</td><td>2026-09</td><td><span class="tag ok">sincronizado</span> 82 comp.</td></tr>
+      <tr><td><b>IPCA</b></td><td>IBGE</td><td>2026-09</td><td><span class="tag ok">sincronizado</span> 82 comp.</td></tr>
+      <tr><td><b>INPC</b></td><td>IBGE</td><td>2026-09</td><td><span class="tag warn">em andamento…</span></td></tr>
+      <tr><td><b>SELIC</b></td><td>Bacen</td><td>2026-09</td><td><span class="tag ok">sincronizado</span> 82 comp.</td></tr>
+      <tr><td><b>TR</b></td><td>Bacen</td><td>2026-09</td><td><span class="tag ok">sincronizado</span> 82 comp.</td></tr>
+    </tbody>
+  </table>
+  <div class="bar"><div></div></div>
+  <div class="muted" style="margin-top:8px">Sincronizando INPC · tentativa 2 de 3 · ~40s</div>
+</div>
+
+<div class="card" style="border-color:var(--danger)">
+  <h3 style="color:var(--danger)">Falha na sincronização</h3>
+  <div class="muted">IPCA-E · 2026-10..2026-10</div>
+  <div style="margin-top:8px">GET falhou <code>https://apisidra.ibge.gov.br/values/t/1436/...</code>: timeout após 3 tentativas</div>
+  <button class="sec mini" style="margin-top:12px">Tentar de novo</button>
+  <div class="note"><b>Decisão:</b> erro por índice não derruba os outros quatro. A tela mostra a falha inline, com o botão de repetir só na linha que falhou. O erro também vai para <code>sync_log</code>, que já tem a tabela pronta.</div>
+</div>
+
+<h2 class="sec">4. Histórico — a tabela sync_log já existe</h2>
+<div class="note"><b>Decisão:</b> a auditoria importa num sistema judicial: precisa dar para responder "de onde veio este índice em 14/03?". <code>sync_log</code> está no schema desde o início e hoje está vazia — não exige migration.</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Quando</th><th>Índice</th><th>Período</th><th>Situação</th><th>Mensagem</th></tr></thead>
+    <tbody>
+      <tr><td>2026-10-09 14:22</td><td>IPCA-E</td><td>2020-01..2026-10</td><td><span class="tag ok">OK</span></td><td>82 competências</td></tr>
+      <tr><td>2026-10-09 14:19</td><td>SELIC</td><td>2020-01..2026-10</td><td><span class="tag ok">OK</span></td><td>82 competências</td></tr>
+      <tr><td>2026-10-09 14:17</td><td>INPC</td><td>2020-01..2026-10</td><td><span class="tag ok">OK</span></td><td>82 competências</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 class="sec">Contratos que a tela exige (ainda não escritos)</h2>
+<div class="card">
+<table>
+  <thead><tr><th>Método</th><th>Rota</th><th>Retorna</th></tr></thead>
+  <tbody>
+    <tr><td><code>listar_indices()</code></td><td>GET /api/indices</td><td><code>[{indice, fonte, ultima, n}]</code></td></tr>
+    <tr><td><code>sincronizar(indice, de, ate)</code></td><td>POST /api/sync</td><td><code>202 {iniciado: true}</code></td></tr>
+    <tr><td><code>status_sync()</code></td><td>GET /api/sync</td><td><code>{rodando, indice, de, ate, log[]}</code></td></tr>
+  </tbody>
+</table>
+<div class="muted" style="margin-top:10px">Os três entram no <code>AppPort</code> (<code>ports.py</code>). O <code>Handler</code> continua só falando com a porta — nunca com <code>sync_indice</code> direto.</div>
+</div>
+
+</body>
+</html>

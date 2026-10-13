@@ -10,6 +10,8 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_UP, getcontext
 
+import sqlite3
+
 getcontext().prec = 28
 
 EC113_CUTOFF = date(2021, 12, 9)
@@ -128,20 +130,44 @@ class MemoriaRepository(IndiceRepository):
 
 
 class SqliteRepository(IndiceRepository):
+    """I/O de índices no SQLite, isolado no repositório.
+
+    Usado como context manager, abre UMA conexão e a reaproveita em todas as
+    buscas do bloco — antes cada `buscar` abria e fechava a própria, o que
+    dava 2 connects por verba. Fora do `with`, cai no modo avulso de sempre,
+    para quem chama `buscar` direto.
+
+    A conexão vive só dentro do bloco e na mesma thread: com o
+    ThreadingHTTPServer isso é o que mantém `check_same_thread` satisfeito.
+    """
+
     def __init__(self, db_path: str):
         self.db_path = db_path
+        self._con: sqlite3.Connection | None = None
+
+    def __enter__(self) -> "SqliteRepository":
+        self._con = sqlite3.connect(self.db_path)
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self.close()
+
+    def close(self) -> None:
+        if self._con is not None:
+            self._con.close()
+            self._con = None
 
     def buscar(self, indice: str, competencia: str) -> Decimal:
-        import sqlite3
-
-        con = sqlite3.connect(self.db_path)
+        avulso = self._con is None
+        con = sqlite3.connect(self.db_path) if avulso else self._con
         try:
             row = con.execute(
                 "SELECT valor FROM indices WHERE indice=? AND competencia=?",
                 (indice, competencia),
             ).fetchone()
         finally:
-            con.close()
+            if avulso:
+                con.close()
         if not row:
             raise KeyError(f"Índice {indice} {competencia} não encontrado em {self.db_path}")
         return D(row[0])
